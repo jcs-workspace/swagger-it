@@ -1,3 +1,9 @@
+[![Build Status](https://travis-ci.com/jcs-workspace/swagger-it.svg?branch=master)](https://travis-ci.com/jcs-workspace/swagger-it)
+[![Unity Engine](https://img.shields.io/badge/python-%3E=_3.6-green.svg)](https://www.python.org/downloads/)
+[![Release Tag](https://img.shields.io/github/tag/jcs-workspace/swagger-it.svg?label=release)](https://github.com/jcs-workspace/swagger-it/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 # swagger-it
 > Parse your microservice project into a [swagger](https://github.com/swagger-api)
 yaml file.
