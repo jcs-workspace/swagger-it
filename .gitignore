@@ -1,0 +1,3 @@
+# default ignore list.
+/.git/
+/test/
