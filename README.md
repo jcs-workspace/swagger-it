@@ -1,9 +1,26 @@
 # swagger-it
-> Parse your microservice project into a [swagger](https://github.com/swagger-api) 
+> Parse your microservice project into a [swagger](https://github.com/swagger-api)
 yaml file.
 
 This turn your workflow around by code first then generate an update to date
 API documentation.
+
+## Installation
+
+**NOTE**: Python 3.6 or higher is required.
+
+```bash
+# clone the repo
+$ git clone https://github.com/jcs-workspace/swagger-it.git
+
+# change the working directory to sherlock
+$ cd sherlock
+
+# install python3 and python3-pip if they are not installed
+
+# install the requirements
+python3 -m pip install -r requirements.txt
+```
 
 ## References
 
