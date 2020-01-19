@@ -18,6 +18,8 @@ from comment_parser import comment_parser
 module_name = "swagger-it: Parse your microservice project into a swagger yaml file."
 __version__ = "0.0.1"
 
+ignore_dir = ['.git', '.vs', '.vscode', 'node_modules'];
+
 class ArgumentError(LookupError):
     """Argument input error."""
 
@@ -61,10 +63,12 @@ def main():
     input = args_input(args.input)
     output = args.output
 
-    dirname = os.path.dirname(output)    # Target directory path.
-    filename = os.path.basename(output)  # Target file to export as swagger yaml.
-
-    print('input:', input)
+    if output is None:
+        dirname = output   # Set it to None.
+        filename = output  # Set it to None.
+    else:
+        dirname = os.path.dirname(output)    # Target directory path.
+        filename = os.path.basename(output)  # Target file to export as swagger yaml.
 
     isFile = os.path.isfile(input)
     isDir = os.path.isdir(input)
@@ -80,7 +84,10 @@ def main():
     # URL: https://stackoverflow.com/questions/2967194/open-in-python-does-not-create-a-file-if-it-doesnt-exist
     #file = open("", "w+")
 
-    #comment_parser.extract_comments('')
+    if isFile:
+        comments = comment_parser.extract_comments(input, mime='text/x-c')
+        print(comments)
+
 
 
 if __name__ == "__main__":
