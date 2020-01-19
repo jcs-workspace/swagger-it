@@ -1,2 +1,3 @@
 python-magic-bin
 comment_parser
+guesslang

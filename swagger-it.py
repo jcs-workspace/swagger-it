@@ -18,7 +18,18 @@ from comment_parser import comment_parser
 module_name = "swagger-it: Parse your microservice project into a swagger yaml file."
 __version__ = "0.0.1"
 
-ignore_dir = ['.git', '.vs', '.vscode', 'node_modules'];
+ignore_dir = ['.git', '.vs', '.vscode', '.log', 'node_modules'];
+
+def containInList(path, lst):
+    """Check if each item in LST inside the PATH.
+
+    @param { typename } path : Path for major check.
+    @param { typename } lst : List of string that will use to check.
+    """
+    for item in lst:
+        if item in path:
+            return True
+    return False
 
 class ArgumentError(LookupError):
     """Argument input error."""
@@ -84,10 +95,21 @@ def main():
     # URL: https://stackoverflow.com/questions/2967194/open-in-python-does-not-create-a-file-if-it-doesnt-exist
     #file = open("", "w+")
 
-    if isFile:
-        comments = comment_parser.extract_comments(input, mime='text/x-c')
-        print(comments)
+    comments = []
 
+    if isFile:  # When is file..
+        comments = comment_parser.extract_comments(input, mime='text/x-c')
+    else:  # When is directory..
+        for r, d, f in os.walk(input):
+            for file in f:
+                filepath = os.path.join(r, file)
+                filepath = filepath.replace("\\", "/")
+                if not containInList(filepath, ignore_dir):
+                    new_comments = comment_parser.extract_comments(filepath, mime='text/x-c')
+                    comments.extend(new_comments)
+                    print('file:', filepath)
+
+    print(comments)
 
 
 if __name__ == "__main__":
