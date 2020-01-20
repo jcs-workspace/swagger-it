@@ -28,6 +28,12 @@ $ cd sherlock
 python3 -m pip install -r requirements.txt
 ```
 
+## Todo List
+
+- [ ] Implementes core changes to generate yaml file.
+- [ ] Design the template file. (Make it as extensible as possible)
+- [ ] Design the tags and docstring to work together.
+
 ## References
 
 * https://github.com/swaggo/swag
