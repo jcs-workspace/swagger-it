@@ -14,42 +14,55 @@ import pathlib
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from comment_parser import comment_parser
 #from guesslang import Guess
+from util import *
+
 
 module_name = "swagger-it: Parse your microservice project into a swagger yaml file."
 __version__ = "0.0.1"
 
-ignore_dir = ['.git', '.vs', '.vscode', '.log', 'node_modules'];
+swagger_identifier = "@swagger"
 
-def containInList(path, lst):
-    """Check if each item in LST inside the PATH.
+swagger_ids = ["@description", "@version", "@title", "@termsOfService",
+               "@contact.email", "@license.name", "@license.url",
+               "@host", "@basePath",
+               "@tags", "@tags.description", "@tags.externalDocs.description", "@tags.externalDocs.url",
+               "@schemes",
+               "@securityDefinitions",
+               "@definitions"]
 
-    @param { typename } path : Path for major check.
-    @param { typename } lst : List of string that will use to check.
+template_file = "./etc/template.yml"
+
+ignore_dir = ['.git', '.vs', '.vscode', '.log', 'node_modules', '__pycache__'];
+
+unique_tags = []   # Tags that can't be repeat.
+unique_paths = []  # Paths that can't be repeat.
+
+
+def extract_swagger_identifier(lst_comments):
+    """Extract swagger docstring from list of comment.
+
+    @param { Array } lst_comments : List of comment that contain swagger identifier.
     """
-    for item in lst:
-        if item in path:
-            return True
-    return False
+    valid_swagger_comments = []
+    for comment in lst_comments:
+        if swagger_identifier in comment.text():
+            valid_swagger_comments.append(comment)
+            pass
+        pass
+    return valid_swagger_comments
 
-class ArgumentError(LookupError):
-    """Argument input error."""
+def form_swagger_buffer(comments):
+    """Form the swagger buffer.
 
-def mkdir_safe(path):
-    """Make directory if not exists.
-
-    @param { string } path : Directory path.
+    @param { Array } comments : List of comments or properly swagger docstrings.
     """
-    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+    with open(template_file, 'r') as file:
+        template_buffer = file.read()
+        pass
+    for comment in comments:
 
-def args_input(input):
-    """Return the default input path.
-
-    @param { string } input : Default input argument.
-    """
-    if input is None:
-        return os.path.dirname(os.path.abspath(__file__))
-    else:
-        return input
+        pass
+    return template_buffer
 
 def main():
     """Program Entry point."""
@@ -80,6 +93,7 @@ def main():
     else:
         dirname = os.path.dirname(output)    # Target directory path.
         filename = os.path.basename(output)  # Target file to export as swagger yaml.
+        pass
 
     isFile = os.path.isfile(input)
     isDir = os.path.isdir(input)
@@ -108,9 +122,16 @@ def main():
                     new_comments = comment_parser.extract_comments(filepath, mime='text/x-c')
                     comments.extend(new_comments)
                     print('file:', filepath)
+                    pass
+                pass
+            pass
+        pass
+
+    comments = extract_swagger_identifier(comments)
 
     print(comments)
-
+    pass
 
 if __name__ == "__main__":
     main()
+    pass
