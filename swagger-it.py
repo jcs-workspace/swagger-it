@@ -14,7 +14,8 @@ import pathlib
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from comment_parser import comment_parser
 #from guesslang import Guess
-from util import *
+#from util import *
+#from info import *
 
 
 module_name = "swagger-it: Parse your microservice project into a swagger yaml file."

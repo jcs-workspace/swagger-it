@@ -7,11 +7,22 @@
 #                   Copyright © 2020 by Shen, Jen-Chieh $
 # ========================================================================
 
+def arrayToString(lst):
+    """Convert LST to string.
+
+    @param { Array } lst : List of object.
+    """
+    str = ""
+    for item in lst:
+        str += str(item)
+        pass
+    return str
+
 def containInList(path, lst):
     """Check if each item in LST inside the PATH.
 
-    @param { typename } path : Path for major check.
-    @param { typename } lst : List of string that will use to check.
+    @param { string } path : Path for major check.
+    @param { Array } lst : List of string that will use to check.
     """
     for item in lst:
         if item in path:
