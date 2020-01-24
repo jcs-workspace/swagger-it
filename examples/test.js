@@ -46,6 +46,8 @@ function listAccount(a, b) {
  *
  * @host petstore.swagger.io
  * @basePath /v2
+ *
+ * @schemes http, https, ws, wss
  */
 function main() {
 
