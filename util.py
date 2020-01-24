@@ -9,25 +9,54 @@
 
 import pathlib
 
-def getFileExtension(path):
+def len_zero_string(lst, def_str, zero_str = ""):
+    """Return DEF_STR or ZERO_STR depends on LST's length is 0 or not.
+
+    @param { Array } lst : List to get the length.
+    @param { string } def_str : Default string.
+    @param { string } zero_str : Zero string.
+    """
+    if len(lst) is 0:
+        return zero_str
+    return def_str
+
+def dict_get_value(dic, key):
+    """Get the key value.
+
+    @param { Dictionary } dic : Dictionary use to get.
+    @param { string } key : Key to get value.
+    """
+    if dict_key_exists(dic, key):
+        return dic[key]
+    return None
+
+def dict_key_exists(dic, key):
+    """Check if the KEY exist in DIC.
+
+    @param { Dictionary } dic : Dictionary use to check.
+    @param { string } key : Key to check.
+    """
+    return key in dic
+
+def get_file_extension(path):
     """Return the file PATH extension.
 
     @param { string } path : Target file path we are going to extract.
     """
     return pathlib.Path(path).suffix
 
-def arrayToString(lst):
+def array_to_string(lst):
     """Convert LST to string.
 
     @param { Array } lst : List of object.
     """
-    str = ""
+    form_str = ""
     for item in lst:
-        str += str(item)
+        form_str += str(item)
         pass
-    return str
+    return form_str
 
-def containInListEqual(item, lst):
+def contain_in_list_equal(item, lst):
     """Check if ITEM is one of the item in LST.
 
     @param { string } item : Item to check.
@@ -38,7 +67,7 @@ def containInListEqual(item, lst):
             return True
     return False
 
-def containInList(item, lst):
+def contain_in_list(item, lst):
     """Check if each item in LST inside the ITEM.
 
     @param { string } item : Path for major check.
