@@ -7,6 +7,15 @@
 #                   Copyright © 2020 by Shen, Jen-Chieh $
 # ========================================================================
 
+import pathlib
+
+def getFileExtension(path):
+    """Return the file PATH extension.
+
+    @param { string } path : Target file path we are going to extract.
+    """
+    return pathlib.Path(path).suffix
+
 def arrayToString(lst):
     """Convert LST to string.
 
@@ -18,14 +27,25 @@ def arrayToString(lst):
         pass
     return str
 
-def containInList(path, lst):
-    """Check if each item in LST inside the PATH.
+def containInListEqual(item, lst):
+    """Check if ITEM is one of the item in LST.
 
-    @param { string } path : Path for major check.
-    @param { Array } lst : List of string that will use to check.
+    @param { string } item : Item to check.
+    @param { Array } lst : List of item to check.
     """
-    for item in lst:
-        if item in path:
+    for cur_item in lst:
+        if cur_item == item:
+            return True
+    return False
+
+def containInList(item, lst):
+    """Check if each item in LST inside the ITEM.
+
+    @param { string } item : Path for major check.
+    @param { Array } lst : List of string to check.
+    """
+    for cur_item in lst:
+        if cur_item in item:
             return True
     return False
 
