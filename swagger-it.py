@@ -37,8 +37,6 @@ swagger_ids = [# -- Info ---------------------------------------------------
                "@securityDefinitions",
                "@definitions"]
 
-template_file = "./etc/template.yml"
-
 ignore_dir = ['.git', '.vs', '.vscode', '.log', 'node_modules', '__pycache__'];
 
 # Valid programminga language; hence we won't waste our time parsing and
@@ -140,9 +138,6 @@ def form_swagger_buffer(comments):
 
     @param { Array } comments : List of comments or properly swagger docstrings.
     """
-    with open(template_file, 'r') as file:
-        template_buffer = file.read()
-        pass
     for comment in comments:
 
         pass

@@ -28,6 +28,22 @@ $ cd sherlock
 python3 -m pip install -r requirements.txt
 ```
 
+## Supported Languages
+
+<table>
+<tr>
+<td>C</td>
+<td>C++</td>
+<td>Objective-C</td>
+<td>C#</td>
+<td>JavaScript</td>
+<td>Java</td>
+<td>Python</td>
+<td>Go</td>
+<td>Ruby</td>
+</tr>
+</table>
+
 ## Todo List
 
 - [ ] Implementes core changes to generate yaml file.
