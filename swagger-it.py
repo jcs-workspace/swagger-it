@@ -10,6 +10,7 @@
 import os
 import platform
 import pathlib
+import re
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from comment_parser import comment_parser
@@ -26,11 +27,13 @@ swagger_identifier = "@swagger"
 swagger_ids = [# -- Info ---------------------------------------------------
                "@description", "@version", "@title", "@termsOfService",
                "@contact.email", "@license.name", "@license.url",
-               "@host", "@basePath",
-               "@tags", "@tags.description", "@tags.externalDocs.description", "@tags.externalDocs.url",
-               "@schemes",
+               "@host", "@basePath", "@schemes",
+               # -- Tags ---------------------------------------------------
+               "@tags", "@tags.description",
+               "@tags.externalDocs.description", "@tags.externalDocs.url",
                # -- Paths ---------------------------------------------------
                "@router", "@verb",  # For GET, POST, PUT, DELETE, etc.
+               "@summary",
                "@param",
                "@response", "@success", "@failure",
                # -- Model ---------------------------------------------------
@@ -52,11 +55,14 @@ mime_type = ['text/x-c', 'text/x-c',
              'text/x-c++', 'application/javascript', 'text/x-java-source',
              'text/x-python', 'text/x-go', 'text/x-ruby']
 
-unique_tags = []   # Tags that can't be repeat.
-unique_paths = []  # Paths that can't be repeat.
+# The swagger info buffer/file.
+# This is the final output result, everything and data will store here.
+swagger_info = SeaggerInfo()
+
+exists_tag = None
 
 
-def getMimeTypeByExtension(ext):
+def get_mime_type_by_extension(ext):
     """Return the mime type string by extension (EXT).
 
     @param { string } ext : Extension string.
@@ -78,8 +84,8 @@ def valid_source_file(path):
 
     @param { string } path : File path to check valid.
     """
-    ext = getFileExtension(path)
-    return containInListEqual(ext, valid_ext)
+    ext = get_file_extension(path)
+    return contain_in_list_equal(ext, valid_ext)
 
 def extract_swagger_identifier(lst_comment):
     """Extract swagger docstring from list of comment/docstring.
@@ -119,7 +125,7 @@ def form_attribute_list(lst_comment):
             attr_id = '@' + attr_pair.pop(0)
             attr_value = ' '.join(attr_pair)
 
-            if not containInListEqual(attr_id, swagger_ids):
+            if not contain_in_list_equal(attr_id, swagger_ids):
                 continue
 
             attr[attr_id] = attr_value
@@ -130,7 +136,99 @@ def form_attribute_list(lst_comment):
         pass
     return attr_pair_lst
 
-def fill_swagger_info():
+def fill_info(key, value):
+    """Fill in the swagger info by KEY and VALUE.
+
+    @param { string } key : Attribute key.
+    @param { string } value : Attribute value.
+    """
+    # -- Info ---------------------------------------------------
+    if key == '@description':
+        swagger_info._info._description = value
+    elif key == '@version':
+        swagger_info._info._version = value
+    elif key == '@title':
+        swagger_info._info._title = value
+    elif key == '@termsOfService':
+        swagger_info._info._termsOfService = value
+    elif key == '@contact.email':
+        swagger_info._info._contact_email = value
+    elif key == '@license.name':
+        swagger_info._info._license_name = value
+    elif key == '@license.url':
+        swagger_info._info._license_url = value
+    elif key == '@host':
+        swagger_info._host = value
+    elif key == '@basePath':
+        swagger_info._basePath = value
+    elif key == '@schemes':
+        there_http = re.search('http[^s]', value)
+        there_https = re.search('https', value)
+        there_ws = re.search('ws[^s]', value)
+        there_wss = re.search('wss', value)
+        if there_http: swagger_info.add_scheme('http')
+        if there_https: swagger_info.add_scheme('https')
+        if there_ws: swagger_info.add_scheme('ws')
+        if there_wss: swagger_info.add_scheme('wss')
+    # -- Tags ---------------------------------------------------
+    elif key == '@tags':
+        swagger_info.add_tag(value)
+        pass
+    elif key == '@tags.description':
+        if exists_tag:
+            print('[WARNING] Define tag description without tag defined.')
+        else:
+            exists_tag._description = value
+            pass
+        pass
+    elif key == '@tags.externalDocs.description':
+        if exists_tag:
+            print('[WARNING] Define tag external document description without tag defined.')
+        else:
+            exists_tag._externalDocs_description = value
+            pass
+        pass
+    elif key == '@tags.externalDocs.url':
+        if exists_tag:
+            print('[WARNING] Define tag external document URL without tag defined.')
+        else:
+            exists_tag._externalDocs_url = value
+            pass
+        pass
+    # -- Paths ---------------------------------------------------
+    elif key == '@summary':
+        pass
+    elif key == '@param':
+        pass
+    elif key == '@response':
+        pass
+    elif key == '@success':
+        pass
+    elif key == '@failure':
+        pass
+    # -- Model ---------------------------------------------------
+    elif key == '@securityDefinitions':
+        pass
+    elif key == '@definitions':
+        pass
+    else:
+        print('[WARNING] Use key not found:', key)
+        pass
+    pass
+
+def fill_swagger_info(attr_lst):
+    """Fill the swagger information by attribute list (ATTR_LST).
+
+    @param { Array } attr_lst : List of attributes.
+    """
+    global exists_tag
+    for attr in attr_lst:
+        tag_name = dict_get_value(attr, '@tags')
+        exists_tag = swagger_info.get_tag(tag_name)
+        for key in attr:
+            fill_info(key, attr[key])
+            pass
+        pass
     pass
 
 def form_swagger_buffer(comments):
@@ -185,18 +283,18 @@ def main():
     comments = []
 
     if isFile:  # When is file..
-        extension = getFileExtension(input)
-        mime_text = getMimeTypeByExtension(extension)
+        extension = get_file_extension(input)
+        mime_text = get_mime_type_by_extension(extension)
         comments = comment_parser.extract_comments(input, mime=mime_text)
     else:  # When is directory..
         for r, d, f in os.walk(input):
             for file in f:
                 filepath = os.path.join(r, file)
                 filepath = filepath.replace("\\", "/")
-                if not containInList(filepath, ignore_dir) and \
+                if not contain_in_list(filepath, ignore_dir) and \
                    valid_source_file(filepath):
-                    extension = getFileExtension(filepath)
-                    mime_text = getMimeTypeByExtension(extension)
+                    extension = get_file_extension(filepath)
+                    mime_text = get_mime_type_by_extension(extension)
                     new_comments = comment_parser.extract_comments(filepath, mime=mime_text)
                     comments.extend(new_comments)
                     pass
@@ -205,12 +303,13 @@ def main():
         pass
 
     comments = extract_swagger_identifier(comments)
+    attr_lst = form_attribute_list(comments)
 
     print(comments)
 
-    attr_lst = form_attribute_list(comments)
+    fill_swagger_info(attr_lst)
 
-    print(attr_lst)
+    print(swagger_info)
 
     # TODO: Outputing .yml file.
 
