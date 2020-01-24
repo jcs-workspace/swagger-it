@@ -21,6 +21,17 @@ class SeaggerInfo(object):
                f"basePath: \"{_basePath}\"" + \
                arrayToString(_tags) + \
                arrayToString(_schemes)
+
+    def add_scheme(self, option):
+        """Scheme defined in Swagger/OpenAPI."""
+        if not option is "https" and \
+            not option is "http" and \
+            not option is "ws" and \
+            not option is "wss":
+            print('[WARNING] Wrong scheme option:', option)
+            return
+        self._schemes.append(f"- {option}\n")
+        pass
     pass
 
 class APIInfo(object):
