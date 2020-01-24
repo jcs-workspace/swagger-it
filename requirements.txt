@@ -1,4 +1,4 @@
-python-magic-bin
+argparse
+python-magic
 libmagic
 comment_parser
-guesslang
