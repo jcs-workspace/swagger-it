@@ -9,7 +9,24 @@
 
 "use strict";
 
-function addPet() {
+/**
+ * @swagger
+ * @summary Show an account
+ * @tags accounts
+ * @accept json
+ * @produce json
+ * @param id path int true "Account ID"
+ * @success 200 {object} model.Account
+ * @failure 400 {object} httputil.HTTPError
+ * @failure 404 {object} httputil.HTTPError
+ * @failure 500 {object} httputil.HTTPError
+ * @router /accounts/{id} [get]
+ */
+function showAccount(a, b) {
+
+}
+
+function listAccount(a, b) {
 
 }
 
@@ -28,7 +45,7 @@ function addPet() {
  * @license.url http://www.apache.org/licenses/LICENSE-2.0.html
  *
  * @host petstore.swagger.io
- * @BasePath /v2
+ * @basePath /v2
  */
 function main() {
 
