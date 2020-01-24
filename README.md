@@ -30,19 +30,15 @@ python3 -m pip install -r requirements.txt
 
 ## Supported Languages
 
-<table>
-<tr>
-<td>C</td>
-<td>C++</td>
-<td>Objective-C</td>
-<td>C#</td>
-<td>JavaScript</td>
-<td>Java</td>
-<td>Python</td>
-<td>Go</td>
-<td>Ruby</td>
-</tr>
-</table>
+* C
+* C++
+* Objective-C
+* C#
+* JavaScript
+* Java
+* Python
+* Go
+* Ruby
 
 ## Todo List
 
