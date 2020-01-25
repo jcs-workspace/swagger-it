@@ -14,7 +14,6 @@ import re
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from comment_parser import comment_parser
-#from guesslang import Guess
 from util import *
 from info import *
 
@@ -28,6 +27,7 @@ swagger_ids = [# -- Info ---------------------------------------------------
                "@description", "@version", "@title", "@termsOfService",
                "@contact.email", "@license.name", "@license.url",
                "@host", "@basePath", "@schemes",
+               "@externalDocs.description", "@externalDocs.url",
                # -- Tags ---------------------------------------------------
                "@tags", "@tags.description",
                "@tags.externalDocs.description", "@tags.externalDocs.url",
@@ -170,6 +170,10 @@ def fill_info(key, value):
         if there_https: swagger_info.add_scheme('https')
         if there_ws: swagger_info.add_scheme('ws')
         if there_wss: swagger_info.add_scheme('wss')
+    elif key == 'externalDocs.description':
+        swagger_info._externalDocs_description = value
+    elif key == 'externalDocs.url':
+        swagger_info._externalDocs_url = value
     # -- Tags ---------------------------------------------------
     elif key == '@tags':
         swagger_info.add_tag(value)
