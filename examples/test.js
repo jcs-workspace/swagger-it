@@ -11,16 +11,26 @@
 
 /**
  * @swagger
+ * @tags accounts
+ * @tags.description Everything about your Pets
+ * @tags.externalDocs.description Find out more
+ * @tags.externalDocs.url http://swagger.io
+ */
+
+/**
+ * @swagger
  * @summary Show an account
  * @tags accounts
+ * @description This is the description to show an account.
  * @accept json
  * @produce json
  * @param id path int true "Account ID"
- * @success 200 {object} model.Account
+ * @success 200 object model.Account
  * @failure 400 {object} httputil.HTTPError
  * @failure 404 {object} httputil.HTTPError
  * @failure 500 {object} httputil.HTTPError
- * @router /accounts/{id} [get]
+ * @verb get
+ * @router /accounts/{id}
  */
 function showAccount(a, b) {
 
@@ -48,6 +58,9 @@ function listAccount(a, b) {
  * @basePath /v2
  *
  * @schemes http, https, ws, wss
+ *
+ * @externalDocs.description Find out more about Swagger
+ * @externalDocs.url http://swagger.io
  */
 function main() {
 
