@@ -9,6 +9,17 @@
 
 import pathlib
 
+def warn_exists(id, checker):
+    """Warn the non-existence for ID without the CHECKER exists."""
+    print(f'[WARNING] Defined `{id}` without `{checker}` defined')
+    pass
+
+def safe_get_value(lst, index):
+    """Safe get the value from a LST with INDEX."""
+    if index >= 0 and index < len(lst):
+        return lst[index]
+    return None
+
 def none_string(vr, def_str, none_str = ""):
     """Return DEF_STR or NONE_STR depends on weather VR is None or empty string.
 
@@ -16,7 +27,7 @@ def none_string(vr, def_str, none_str = ""):
     @param { string } def_str : Default string.
     @param { string } none_str : None string.
     """
-    if vr is None or vr is "":
+    if vr is None or vr is "" or vr is False:
         return none_str
     return def_str
 
