@@ -9,6 +9,17 @@
 
 import pathlib
 
+def none_string(vr, def_str, none_str = ""):
+    """Return DEF_STR or NONE_STR depends on weather VR is None or empty string.
+
+    @param { any } vr : Any variable you want to check.
+    @param { string } def_str : Default string.
+    @param { string } none_str : None string.
+    """
+    if vr is None or vr is "":
+        return none_str
+    return def_str
+
 def len_zero_string(lst, def_str, zero_str = ""):
     """Return DEF_STR or ZERO_STR depends on LST's length is 0 or not.
 
