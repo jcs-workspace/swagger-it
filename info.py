@@ -9,6 +9,62 @@
 
 from util import *
 
+class PropertyInfo(object):
+    """Property data structure."""
+    _name = ""
+    _type = ""
+    _description = ""
+    _format = ""
+    _default = None  # None, True or False
+
+    def __str__(self):
+        return f"      {self._name}:\n" + \
+               none_string(self._description,
+               f"        description: \"{self._type}\"\n") + \
+               none_string(self._type,
+               f"        type: \"{self._type}\"\n") + \
+               none_string(self._format,
+               f"        format: \"{self._format}\"\n") + \
+               none_string(self._default,
+               f"        default: \"{self._default}\"\n")
+        pass
+
+class DefinitionInfo(object):
+    """Definition data structure."""
+    _name = ""
+    _type = ""
+    _properties = []
+
+    def __str__(self):
+        return f"  {self._name}:\n" + \
+               f"    type: {self._type}" + \
+               len_zero_string(self._properties, 'properties:\n') + \
+               array_to_string(self._properties) + \
+               f"    xml:\n" + \
+               f"      name: {self._name}"
+    pass
+
+class SecurityDefinitionInfo(object):
+    """Security definition data structure."""
+    _id = ""
+    _type = ""
+    _name = ""
+    _flow = ""
+    _authorizationUrl = ""
+    _scopes = []  # TODO:  ..
+    _in = ""
+
+    def __str__(self):
+        return f"  {self._id}:\n" + \
+               f"    type: \"{self._type}\"\n" + \
+               f"    name: \"{self._name}\"\n" + \
+               f"    authorizationUrl: \"{self._authorizationUrl}\"\n" + \
+               f"    flow: \"{self._flow}\"\n" + \
+               #f"    scopes:\n" + \
+               #f"      write:" + \
+               f"    in: \"{self._in}\"\n"
+    pass
+
 class ResponseInfo(object):
     """Response data structure."""
     _type = ""  # 400, 404, 405, etc.
@@ -92,6 +148,8 @@ class SeaggerInfo(object):
     _tags = []
     _schemes = []
     _paths = []
+    _externalDocs_description = ""
+    _externalDocs_url = ""
 
     def __str__(self):
         return f"swagger: \"{self._swagger}\"\n" + \
