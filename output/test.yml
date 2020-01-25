@@ -1,0 +1,40 @@
+swagger: "2.0"
+info:
+  description: "This is a sample server Petstore server."
+  version: "1.0"
+  title: "Swagger Example API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "support@swagger.io"
+host: "petstore.swagger.io"
+basePath: "/v2"
+tags:
+- name: "accounts"
+  description: "Everything about your Pets"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+schemes:
+- http
+- https
+- ws
+- wss
+paths:
+  /accounts/{id}:
+    get:
+      tags:
+      - ""
+      summary: "Show an account"
+      description: "This is the description to show an account."
+      responses:
+        200:
+          description: "model.Account"
+          schema:
+           type: "object"
+        500:
+          description: "httputil.HTTPError"
+          schema:
+           $ref: "{object}"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
