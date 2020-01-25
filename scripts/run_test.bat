@@ -10,4 +10,4 @@
 
 cd ..
 
-python swagger-it.py -i ./
+python swagger-it.py -i "./" -o "./output/test.yml"
