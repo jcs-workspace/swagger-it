@@ -29,16 +29,25 @@ swagger_ids = [# -- Info ---------------------------------------------------
                "@host", "@basePath", "@schemes",
                "@externalDocs.description", "@externalDocs.url",
                # -- Tags ---------------------------------------------------
-               "@tags", "@tags.description",
+               "@tags",  # Followed by name.
+               "@tags.description",
                "@tags.externalDocs.description", "@tags.externalDocs.url",
-               # -- Paths ---------------------------------------------------
-               "@router", "@verb",  # For GET, POST, PUT, DELETE, etc.
-               "@summary",
+               # -- Paths --------------------------------------------------
+               "@router",  # Followed by name.
+               "@verb",  # For GET, POST, PUT, DELETE, etc.
+               "@summary", "@description",
+               "@operationId",
                "@param",
                "@response", "@success", "@failure",
-               # -- Model ---------------------------------------------------
-               "@securityDefinitions",
-               "@definitions"]
+               # -- Security Definitions -----------------------------------
+               "@sec_def",  # Followed by name.
+               "@name",
+               "@type", "@authorizationUrl", "@flow", "@in",
+               "@scope",
+               # -- Definitions --------------------------------------------
+               "@def",  # Followed by name.
+               "@type",
+               "@property.description", "@property.type", "@property.format"]
 
 ignore_dir = ['.git', '.vs', '.vscode', '.log', 'node_modules', '__pycache__'];
 
@@ -60,6 +69,7 @@ mime_type = ['text/x-c', 'text/x-c',
 swagger_info = SeaggerInfo()
 
 exists_tag = None
+exists_path = None
 
 
 def get_mime_type_by_extension(ext):
@@ -128,7 +138,7 @@ def form_attribute_list(lst_comment):
             if not contain_in_list_equal(attr_id, swagger_ids):
                 continue
 
-            attr[attr_id] = attr_value
+            attr[attr_id] = attr_value.strip()
             pass
         if attr:
             attr_pair_lst.append(attr)
@@ -144,7 +154,11 @@ def fill_info(key, value):
     """
     # -- Info ---------------------------------------------------
     if key == '@description':
-        swagger_info._info._description = value
+        if exists_path:  # @router exists.
+            swagger_info.get_path(exists_path)._description = value
+            pass
+        else:
+            swagger_info._info._description = value
     elif key == '@version':
         swagger_info._info._version = value
     elif key == '@title':
@@ -174,45 +188,71 @@ def fill_info(key, value):
         swagger_info._externalDocs_description = value
     elif key == 'externalDocs.url':
         swagger_info._externalDocs_url = value
+    elif key == '@externalDocs.description':
+        swagger_info._externalDocs_description = value
+    elif key == '@externalDocs.url':
+        swagger_info._externalDocs_url = value
     # -- Tags ---------------------------------------------------
     elif key == '@tags':
-        swagger_info.add_tag(value)
+        swagger_info.get_tag(value)  # Create one on it's own
         pass
     elif key == '@tags.description':
-        if exists_tag:
-            print('[WARNING] Define tag description without tag defined.')
+        if not exists_tag:
+            warn_exists('@tags.description', '@tags')
         else:
-            exists_tag._description = value
-            pass
-        pass
+            swagger_info.get_tag(exists_tag)._description = value
     elif key == '@tags.externalDocs.description':
-        if exists_tag:
-            print('[WARNING] Define tag external document description without tag defined.')
+        if not exists_tag:
+            warn_exists('@tags.externalDocs.description', '@tags')
         else:
-            exists_tag._externalDocs_description = value
-            pass
-        pass
+            swagger_info.get_tag(exists_tag)._externalDocs_description = value
     elif key == '@tags.externalDocs.url':
-        if exists_tag:
-            print('[WARNING] Define tag external document URL without tag defined.')
+        if not exists_tag:
+            warn_exists('@tags.externalDocs.url', '@tags')
         else:
-            exists_tag._externalDocs_url = value
-            pass
-        pass
+            swagger_info.get_tag(exists_tag)._externalDocs_url = value
     # -- Paths ---------------------------------------------------
+    elif key == '@router':
+        swagger_info.get_path(value)  # Create one on it's own
+
+        # TODO: Parse {id} etc. And make one parameter.
+    elif key == '@verb':
+        if not exists_path:
+            warn_exists('@verb', '@router')
+        else:
+            swagger_info.get_path(exists_path)._verb = value
     elif key == '@summary':
-        pass
+        if not exists_path:
+            warn_exists('@summary', '@router')
+        else:
+            swagger_info.get_path(exists_path)._summary = value
+    elif key == '@operationId':
+        if not exists_path:
+            warn_exists('@operationId', '@router')
+        else:
+            swagger_info.get_path(exists_path)._operationId = value
     elif key == '@param':
         pass
-    elif key == '@response':
+    elif key == '@response' or key == '@success' or key == '@failure':
+        if not exists_path:
+            warn_exists('@response / @success / @failure', '@router')
+        else:
+            fmt_val_lst = value.split(' ')
+            current_path = swagger_info.get_path(exists_path)
+
+            # This is where I parse `@response` format.
+            res_id = safe_get_value(fmt_val_lst, 0)
+            res_type_or_ref = safe_get_value(fmt_val_lst, 1)
+            res_desc = safe_get_value(fmt_val_lst, 2)
+
+            new_res = current_path.get_response(res_id)
+            new_res._description = res_desc
+            new_res._type_or_ref = res_type_or_ref
         pass
-    elif key == '@success':
-        pass
-    elif key == '@failure':
-        pass
-    # -- Model ---------------------------------------------------
+    # -- Security Definitions -----------------------------------
     elif key == '@securityDefinitions':
         pass
+    # -- Definitions --------------------------------------------
     elif key == '@definitions':
         pass
     else:
@@ -226,9 +266,10 @@ def fill_swagger_info(attr_lst):
     @param { Array } attr_lst : List of attributes.
     """
     global exists_tag
+    global exists_path
     for attr in attr_lst:
-        tag_name = dict_get_value(attr, '@tags')
-        exists_tag = swagger_info.get_tag(tag_name)
+        exists_tag = dict_get_value(attr, '@tags')
+        exists_path = dict_get_value(attr, '@router')
         for key in attr:
             fill_info(key, attr[key])
             pass
@@ -279,10 +320,17 @@ def main():
     isFile = os.path.isfile(input)
     isDir = os.path.isdir(input)
 
-    print("[SWAGGER-IT] Start checking input...")
+    print("[SWAGGER-IT] Start checking input:::")
 
     if not isFile and not isDir:
         raise ArgumentError('[ERROR] File input error:', input)
+
+    print("[SWAGGER-IT] Start checking output:::")
+
+    if not dirname and not filename:
+        raise ArgumentError('[ERROR] File output error:', output)
+
+    print("[SWAGGER-IT] Parsing comments and docstrings:::")
 
     comments = []
 
@@ -311,17 +359,19 @@ def main():
 
     print(comments)
 
+    print("[SWAGGER-IT] Filling swagger informations:::")
+
     fill_swagger_info(attr_lst)
 
     print(swagger_info)
 
-    # TODO: Outputing .yml file.
+    mkdir_safe(dirname)  # Ensure the path exists.
 
-    #mkdir_safe(dirname)
+    file = open(output, "w+")
+    file.write(str(swagger_info))
+    file.close()
 
-    # URL: https://stackoverflow.com/questions/2967194/open-in-python-does-not-create-a-file-if-it-doesnt-exist
-    #file = open("", "w+")
-
+    print("[SWAGGER-IT] Done generate the file:::")
     pass
 
 if __name__ == "__main__":
