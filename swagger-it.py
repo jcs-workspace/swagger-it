@@ -43,7 +43,7 @@ swagger_ids = [# -- Info ---------------------------------------------------
                "@sec_def",  # Followed by name.
                "@name",
                "@type", "@authorizationUrl", "@flow", "@in", "@required",
-               "@scope",
+               "@scope.admin", "@scope.read", "@scope.write",
                # -- Definitions --------------------------------------------
                "@def",  # Followed by name.
                "@type",
