@@ -17,6 +17,7 @@ API documentation.
 
 - [swagger-it](#swagger-it)
     - [Command Line](#command-line)
+        - [-](#-)
     - [Installation](#installation)
     - [Supported Languages](#supported-languages)
     - [Todo List](#todo-list)
