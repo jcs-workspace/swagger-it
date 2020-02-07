@@ -11,6 +11,35 @@ yaml file.
 This turn your workflow around by code first then generate an update to date
 API documentation.
 
+
+## Command Line
+
+Full command line design.
+
+```
+usage: swagger-it.py [-h] [--input INPUT] [--output OUTPUT] [--version]
+
+swagger-it: Parse your microservice project into a swagger yaml file. (Version 0.0.1)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --input INPUT, -i INPUT
+                        Input path, this can be a directory or file.
+  --output OUTPUT, -o OUTPUT
+                        Output path, this must be a path point to a file.
+  --version             Display version information and dependencies.
+```
+
+Example Usage
+
+Parameters `-i` and `-o` are must variables for now.
+
+**[INFO] I am currently working on the parsing comment/docstring.**
+
+```
+python -i './' -o './output/file.yml'
+```
+
 ## Installation
 
 **NOTE**: Python 3.6 or higher is required.
