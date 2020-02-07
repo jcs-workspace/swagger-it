@@ -5,7 +5,7 @@
 
 
 # swagger-it
-> Parse your microservice project into a [swagger](https://github.com/swagger-api)
+> Automatically generate swagger.io yaml file from your project.
 yaml file.
 
 This turn your workflow around by code first then generate an update to date
