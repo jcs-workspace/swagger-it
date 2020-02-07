@@ -1,4 +1,5 @@
-argparse
-python-magic
-libmagic
-comment_parser
+argparse>=1.4.0
+python-magic-bin>=0.4.14
+python-magic>=0.4.15
+libmagic>=1.0
+comment_parser>=1.1.6
