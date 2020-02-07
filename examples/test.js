@@ -24,7 +24,7 @@
  * @description This is the description to show an account.
  * @accept json
  * @produce json
- * @param id path int true "Account ID"
+ * @param id path integer true "Account ID"
  * @success 200 object model.Account
  * @failure 400 {object} httputil.HTTPError
  * @failure 404 {object} httputil.HTTPError
