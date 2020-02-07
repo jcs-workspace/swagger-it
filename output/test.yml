@@ -23,18 +23,23 @@ paths:
   /accounts/{id}:
     get:
       tags:
-      - ""
+      - "accounts"
       summary: "Show an account"
       description: "This is the description to show an account."
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
       responses:
         200:
           description: "model.Account"
           schema:
-           type: "object"
+            type: "object"
         500:
           description: "httputil.HTTPError"
           schema:
-           $ref: "{object}"
+            $ref: "{object}"
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"
