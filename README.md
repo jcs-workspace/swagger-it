@@ -19,6 +19,7 @@ API documentation.
     - [Command Line](#command-line)
         - [Example Usage](#example-usage)
     - [Installation](#installation)
+    - [Dependencies](#dependencies)
     - [Supported Languages](#supported-languages)
     - [Todo List](#todo-list)
     - [References](#references)
