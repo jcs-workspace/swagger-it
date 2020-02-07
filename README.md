@@ -17,7 +17,7 @@ API documentation.
 
 - [swagger-it](#swagger-it)
     - [Command Line](#command-line)
-        - [-](#-)
+        - [Example Usage](#example-usage)
     - [Installation](#installation)
     - [Supported Languages](#supported-languages)
     - [Todo List](#todo-list)
@@ -44,7 +44,7 @@ optional arguments:
   --version             Display version information and dependencies.
 ```
 
-#### Example Usage
+### Example Usage
 
 Parameters `-i` and `-o` are must variables for now.
 
