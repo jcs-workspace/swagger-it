@@ -42,7 +42,7 @@ swagger_ids = [# -- Info ---------------------------------------------------
                # -- Security Definitions -----------------------------------
                "@sec_def",  # Followed by name.
                "@name",
-               "@type", "@authorizationUrl", "@flow", "@in",
+               "@type", "@authorizationUrl", "@flow", "@in", "@required",
                "@scope",
                # -- Definitions --------------------------------------------
                "@def",  # Followed by name.
@@ -195,6 +195,8 @@ def fill_info(key, value):
     # -- Tags ---------------------------------------------------
     elif key == '@tags':
         swagger_info.get_tag(value)  # Create one on it's own
+        if exists_path:
+            swagger_info.get_path(exists_path)._tags = value
         pass
     elif key == '@tags.description':
         if not exists_tag:
@@ -213,9 +215,18 @@ def fill_info(key, value):
             swagger_info.get_tag(exists_tag)._externalDocs_url = value
     # -- Paths ---------------------------------------------------
     elif key == '@router':
-        swagger_info.get_path(value)  # Create one on it's own
+        path_info = swagger_info.get_path(value)  # Create one on it's own
 
-        # TODO: Parse {id} etc. And make one parameter.
+        # Parse parameter from router.
+        pattern = re.compile(r'{\w*}')  # Find all parameters between { }.
+        matches = pattern.finditer(value)
+
+        for match in matches:
+            match_val = match.group()
+            end_pt = len(match_val) - 1
+            path_info.get_param(match_val[1:end_pt])
+        pass
+
     elif key == '@verb':
         if not exists_path:
             warn_exists('@verb', '@router')
@@ -232,6 +243,32 @@ def fill_info(key, value):
         else:
             swagger_info.get_path(exists_path)._operationId = value
     elif key == '@param':
+        # TODO: parse `param` description.
+        keywords = value.split()
+
+        param_name = keywords[0]  # First is the name of variable.
+
+        param = swagger_info.get_path(exists_path).get_param(param_name)
+
+        for kw in keywords:
+            current_type = contain_in_list_equal(kw, PARAM_TYPES)
+            if current_type:
+                param.set_type(current_type)
+                break
+            pass
+        for kw in keywords:
+            current_in = contain_in_list_equal(kw, PARAM_INS)
+            if current_in:
+                param.set_in(current_in)
+                break
+            pass
+        for kw in keywords:
+            current_req = contain_in_list_equal(kw, PARAM_REQUIRED)
+            if current_req:
+                param.set_required(current_req)
+                break
+            pass
+
         pass
     elif key == '@response' or key == '@success' or key == '@failure':
         if not exists_path:
@@ -275,16 +312,6 @@ def fill_swagger_info(attr_lst):
             pass
         pass
     pass
-
-def form_swagger_buffer(comments):
-    """Form the swagger buffer.
-
-    @param { Array } comments : List of comments or properly swagger docstrings.
-    """
-    for comment in comments:
-
-        pass
-    return template_buffer
 
 def main():
     """Program Entry point."""

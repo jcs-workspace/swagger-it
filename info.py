@@ -9,6 +9,12 @@
 
 from util import *
 
+
+PARAM_TYPES = ["string", "number", "boolean", "integer", "array"]
+PARAM_INS = ["body", "haeder", "formData", "query", "path"]
+PARAM_RES_TYPES = ["array", "boolean", "integer", "number", "object", "string", "file"]
+PARAM_REQUIRED = ["true", True, "[x]", "false", False, "[]", "[ ]"]
+
 class PropertyInfo(object):
     """Property data structure."""
     _name = ""
@@ -16,6 +22,10 @@ class PropertyInfo(object):
     _description = ""
     _format = ""
     _default = None  # None, True or False
+
+    def log_check_warnings(self):
+        """Log out the warnings when outputing the file."""
+        pass
 
     def __str__(self):
         return f"      {self._name}:\n" + \
@@ -27,13 +37,17 @@ class PropertyInfo(object):
                f"        format: \"{self._format}\"\n") + \
                none_string(self._default,
                f"        default: \"{self._default}\"\n")
-        pass
+    pass
 
 class DefinitionInfo(object):
     """Definition data structure."""
     _name = ""  # Variable name.
     _type = ""
     _properties = []
+
+    def log_check_warnings(self):
+        """Log out the warnings when outputing the file."""
+        pass
 
     def __str__(self):
         return f"  {self._name}:\n" + \
@@ -54,6 +68,10 @@ class SecurityDefinitionInfo(object):
     _scopes = []  # TODO:  ..
     _in = ""
 
+    def log_check_warnings(self):
+        """Log out the warnings when outputing the file."""
+        pass
+
     def __str__(self):
         return f"  {self._id}:\n" + \
                f"    type: \"{self._type}\"\n" + \
@@ -69,34 +87,37 @@ class ResponseInfo(object):
     _description = ""
     _type_or_ref = ""
 
+    def log_check_warnings(self):
+        """Log out the warnings when outputing the file."""
+        pass
+
     def type_valid(self):
         """Check _type_or_ref a valid value."""
-        return self._type_or_ref == 'array' or \
-               self._type_or_ref == 'boolean' or \
-               self._type_or_ref == 'integer' or \
-               self._type_or_ref == 'number' or \
-               self._type_or_ref == 'object' or \
-               self._type_or_ref == 'string' or \
-               self._type_or_ref == 'file'
+        return contain_in_list_equal(self._type_or_ref, PARAM_RES_TYPES)
 
     def __str__(self):
         return f"        {self._id}:\n" + \
                f"          description: \"{self._description}\"\n" + \
                none_string(self._type_or_ref,
-               "          schema:\n" + \
+               f"          schema:\n" + \
                none_string(self.type_valid(),
-               f"           type: \"{self._type_or_ref}\"\n") + \
+               f"            type: \"{self._type_or_ref}\"\n") + \
                none_string(not self.type_valid(),
-               f"           $ref: \"{self._type_or_ref}\"\n"))
+               f"            $ref: \"{self._type_or_ref}\"\n"))
     pass
 
 class ParameterInfo(object):
     """Parameter data structure."""
     _name = ""
-    _in = ""
+    _in = ""  # NOTE: Use `set_in` instead.
     _description = ""
-    _required = None
+    _required = ""  # NOTE: Use `set_required` instead.
+    _type = ""  # NOTE: Use `set_type` instead.
     _ref = ""
+
+    def log_check_warnings(self):
+        """Log out the warnings when outputing the file."""
+        pass
 
     def __str__(self):
         return f"      - name: \"{self._name}\"\n" + \
@@ -105,8 +126,37 @@ class ParameterInfo(object):
                f"        description: \"{self._description}\"\n") + \
                none_string(self._required,
                f"        required: {self._required}\n") + \
+               f"        type: \"{self._type}\"\n" + \
+               none_string(self._ref,
                f"        schema:\n" + \
-               f"          $ref: \"{self._ref}\"\n"
+               f"          $ref: \"{self._ref}\"\n")
+
+
+    def set_required(self, val):
+        """Safely set the `required` flag by checking VAL."""
+        if not contain_in_list_equal(val, PARAM_REQUIRED):
+            raise ArgumentError("[WARNING] `required`, should be `true or `false`")
+        if val == False or val == "false" or val == "[]" or val == "[ ]":
+            self._required = "false"
+        elif val == True or val == "true" or val == "[x]":
+            self._required = "true"
+        else:
+            self._required = val
+        pass
+
+    def set_type(self, val):
+        """Set `type` with VAL."""
+        if not contain_in_list_equal(val, PARAM_TYPES):
+            raise ArgumentError("[WARNING] `type`, should be " + ", ".join(PARAM_TYPES))
+        self._type = val
+        pass
+
+    def set_in(self, val):
+        """Set `in` with VAL."""
+        if not contain_in_list_equal(val, PARAM_INS):
+            raise ArgumentError("[WARNING] `in`, should be " + ", ".join(PARAM_INS))
+        self._in = val
+        pass
     pass
 
 class PathInfo(object):
@@ -122,6 +172,10 @@ class PathInfo(object):
     _parameters = []
     _responses = []
     _security = []
+
+    def log_check_warnings(self):
+        """Log out the warnings when outputing the file."""
+        pass
 
     def __str__(self):
         return f"  {self._path}:\n" + \
@@ -140,7 +194,7 @@ class PathInfo(object):
                len_zero_string(self._produces,
                '      produces:\n') + \
                array_to_string(self._produces) + \
-               len_zero_string(self._produces,
+               len_zero_string(self._parameters,
                '      parameters:\n') + \
                array_to_string(self._parameters) + \
                len_zero_string(self._responses,
@@ -150,39 +204,50 @@ class PathInfo(object):
                '      security:\n') + \
                array_to_string(self._security)
 
-    def add_consume(self, name):
-        """Add a new consume."""
-        self._consumes.append("- {name}\n")
-        pass
-
-    def add_produce(self, name):
-        """Add a new produce."""
-        self._produces.append("- {name}\n")
-        pass
-
-    def add_response(self, id):
-        """Add a new response."""
+    def _add_response(self, id):
+        """Add a new response by using ID."""
         new_res = ResponseInfo()
         new_res._id = id
         self._responses.append(new_res)
         return new_res
 
+    def get_param(self, name):
+        """Get a paramter by using NAME as id."""
+        for param in self._parameters:
+            if name == param._name:
+                return param
+            pass
+        new_param = self._add_param(name)
+        return new_param
+
     def get_response(self, id):
-        """Return a response data by ID.
-        If not found, create a new one."""
+        """Return a response data by ID.  If not found, create a new one."""
         if not id:
             return None
         for response in self._responses:
             if response._id == id:
                 return response
             pass
-        new_res = self.add_response(id)
+        new_res = self._add_response(id)
         return new_res
 
-    def get_param(self, name):
-        """Add a new parameter."""
-        # TODO: ..
+    def _add_param(self, name):
+        """Add a new parameter info by NAME."""
+        param = ParameterInfo()
+        param._name = name
+        self._parameters.append(param)
+        return param
+
+    def _add_consume(self, name):
+        """Add a new consume by NAME."""
+        self._consumes.append("- {name}\n")
         pass
+
+    def _add_produce(self, name):
+        """Add a new produce."""
+        self._produces.append("- {name}\n")
+        pass
+
     pass
 
 class TagInfo(object):
@@ -191,6 +256,10 @@ class TagInfo(object):
     _description = ""
     _externalDocs_description = ""
     _externalDocs_url = ""
+
+    def log_check_warnings(self):
+        """Log out the warnings when outputing the file."""
+        pass
 
     def __str__(self):
         return f"- name: \"{self._name}\"\n" + \
@@ -210,6 +279,10 @@ class APIInfo(object):
     _license_name = ""
     _license_url = ""
 
+    def log_check_warnings(self):
+        """Log out the warnings when outputing the file."""
+        pass
+
     def __str__(self):
         return f"  description: \"{self._description}\"\n" + \
                f"  version: \"{self._version}\"\n" + \
@@ -218,7 +291,7 @@ class APIInfo(object):
                none_string(self._contact_email,
                f"  contact:\n" + \
                f"    email: \"{self._contact_email}\"\n") + \
-               none_string(self._license_name is "" and self._license_url is "",
+               none_string(self._license_name == "" and self._license_url == "",
                f"  license:\n" + \
                f"    name: \"{self._license_name}\"\n" + \
                f"    url: \"{self._license_url}\"\n")
@@ -238,6 +311,25 @@ class SeaggerInfo(object):
     _externalDocs_description = ""
     _externalDocs_url = ""
 
+    def _log_check_warnings_object(self, obj):
+        """Log check warnings to the OBJ."""
+        if type(obj) is list:
+            for val in obj:
+                val.log_check_warnings()
+                pass
+        else:
+            obj.log_check_warnings()
+
+    def log_check_warnings(self):
+        """Log out the warnings when outputing the file."""
+        self._log_check_warnings_object(self._info)
+        self._log_check_warnings_object(self._tags)
+        self._log_check_warnings_object(self._schemes)
+        self._log_check_warnings_object(self._paths)
+        self._log_check_warnings_object(self._securityDefinitions)
+        self._log_check_warnings_object(self._definitions)
+        pass
+
     def __str__(self):
         return f"swagger: \"{self._swagger}\"\n" + \
                f"info:\n{self._info}" + \
@@ -255,48 +347,40 @@ class SeaggerInfo(object):
 
     def add_scheme(self, option):
         """Scheme defined in Swagger/OpenAPI."""
-        if not option is "https" and not option is "http" and \
-            not option is "ws" and not option is "wss":
+        if not option == "https" and not option == "http" and \
+            not option == "ws" and not option == "wss":
             print('[WARNING] Wrong scheme option:', option)
             return
         self._schemes.append(f"- {option}\n")
         pass
 
-    def add_tag(self, tag_name):
-        """Add tag by new TAG_NAME.
-
-        @param { string } tag_name : Name of the tag.
-        """
-        tag = TagInfo()
-        tag._name = tag_name
-        self._tags.append(tag)
-        return tag
-
     def get_tag(self, tag_name):
-        """Get tag by TAG_NAME.
-        If not found, we create a new one."""
+        """Get tag by TAG_NAME.  If not found, we create a new one."""
         if not tag_name:
             return None
         for tag in self._tags:
             if tag._name == tag_name:
                 return tag
             pass
-        new_tag = self.add_tag(tag_name)
+        new_tag = self._add_tag(tag_name)
         return new_tag
 
-    def add_path(self, path_name):
-        """Add path by new PATH_NAME.
+    def _add_tag(self, tag_name):
+        """Add tag by new TAG_NAME."""
+        tag = TagInfo()
+        tag._name = tag_name
+        self._tags.append(tag)
+        return tag
 
-        @param { string } path_name : Name of the path/route.
-        """
+    def add_path(self, path_name):
+        """Add path by new PATH_NAME."""
         path = PathInfo()
         path._path = path_name
         self._paths.append(path)
         return path
 
     def get_path(self, path_name):
-        """Get path by PATH_NAME.
-        If not found, we create a new one."""
+        """Get path by PATH_NAME.  If not found, we create a new one."""
         if not path_name:
             return None
         for path in self._paths:
@@ -314,10 +398,7 @@ class SeaggerInfo(object):
         return defi
 
     def get_def(self, def_name):
-        """Get definition by DEF_NAME.
-
-        @param { string } def_name : Name of the definition.
-        """
+        """Get definition by DEF_NAME."""
         if not def_name:
             return None
         for defi in self._definitions:

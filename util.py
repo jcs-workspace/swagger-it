@@ -86,7 +86,7 @@ def contain_in_list_equal(item, lst):
     """
     for cur_item in lst:
         if cur_item == item:
-            return True
+            return cur_item
     return False
 
 def contain_in_list(item, lst):
@@ -97,7 +97,7 @@ def contain_in_list(item, lst):
     """
     for cur_item in lst:
         if cur_item in item:
-            return True
+            return cur_item
     return False
 
 class ArgumentError(LookupError):
