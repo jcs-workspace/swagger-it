@@ -27,7 +27,7 @@ def none_string(vr, def_str, none_str = ""):
     @param { string } def_str : Default string.
     @param { string } none_str : None string.
     """
-    if vr is None or vr is "" or vr is False:
+    if vr == None or vr == "" or vr == False:
         return none_str
     return def_str
 
@@ -38,7 +38,7 @@ def len_zero_string(lst, def_str, zero_str = ""):
     @param { string } def_str : Default string.
     @param { string } zero_str : Zero string.
     """
-    if len(lst) is 0:
+    if len(lst) == 0:
         return zero_str
     return def_str
 
