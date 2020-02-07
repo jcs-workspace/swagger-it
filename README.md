@@ -73,6 +73,10 @@ python3 -m pip install -r requirements.txt
 
 ## Dependencies
 
+This is a list of dependencies, make sure you installed all these from 
+[pip](https://pypi.org/project/pip/)
+correctly!
+
 * [argparse](https://pypi.org/project/argparse/)
 * [python-magic-bin](https://pypi.org/project/python-magic-bin/)
 * [python-magic](https://pypi.org/project/python-magic/)
