@@ -43,7 +43,7 @@ optional arguments:
   --version             Display version information and dependencies.
 ```
 
-Example Usage
+#### Example Usage
 
 Parameters `-i` and `-o` are must variables for now.
 
