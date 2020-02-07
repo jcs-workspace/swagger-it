@@ -12,6 +12,19 @@ This turn your workflow around by code first then generate an update to date
 API documentation.
 
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [swagger-it](#swagger-it)
+    - [Command Line](#command-line)
+    - [Installation](#installation)
+    - [Supported Languages](#supported-languages)
+    - [Todo List](#todo-list)
+    - [References](#references)
+
+<!-- markdown-toc end -->
+
+
 ## Command Line
 
 Full command line design.
