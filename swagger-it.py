@@ -39,10 +39,11 @@ swagger_ids = [# -- Info ---------------------------------------------------
                "@operationId",
                "@param",
                "@response", "@success", "@failure",
+               "@security",
                # -- Security Definitions -----------------------------------
-               "@sec_def",  # Followed by name.
+               "@securityDefinitions",  # Followed by name.
                "@name",
-               "@type", "@authorizationUrl", "@flow", "@in", "@required",
+               "@type", "@authorizationUrl", "@tokenUrl", "@flow", "@in", "@required",
                "@scope.admin", "@scope.read", "@scope.write",
                # -- Definitions --------------------------------------------
                "@def",  # Followed by name.
@@ -286,11 +287,27 @@ def fill_info(key, value):
             new_res._description = res_desc
             new_res._type_or_ref = res_type_or_ref
         pass
+    elif key == '@security':
+        pass
     # -- Security Definitions -----------------------------------
     elif key == '@securityDefinitions':
         pass
+    elif key == '@securityDefinitions.type':
+        pass
+    elif key == '@securityDefinitions.flow':
+        pass
+    elif key == '@authorizationUrl':
+        pass
+    elif key == '@tokenUrl':
+        pass
+    elif key == '@scope.admin':
+        pass
+    elif key == '@scope.read':
+        pass
+    elif key == '@scope.write':
+        pass
     # -- Definitions --------------------------------------------
-    elif key == '@definitions':
+    elif key == '@def':
         pass
     else:
         print('[WARNING] Use key not found:', key)
