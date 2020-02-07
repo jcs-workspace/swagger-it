@@ -71,6 +71,14 @@ $ cd sherlock
 python3 -m pip install -r requirements.txt
 ```
 
+## Dependencies
+
+* [argparse](https://pypi.org/project/argparse/)
+* [python-magic-bin](https://pypi.org/project/python-magic-bin/)
+* [python-magic](https://pypi.org/project/python-magic/)
+* [libmagic](https://pypi.org/project/libmagic/)
+* [comment_parser](https://pypi.org/project/comment-parser/)
+
 ## Supported Languages
 
 * C
